@@ -80,7 +80,12 @@ export async function createCurtain(frame:Frame) {
 
     await curtain.setMetadata('curtain', 'true');
 
-    return await frame.add(curtain);
+
+    await frame.add(curtain);
+    frame.title = "";
+    await frame.sync();
+
+    return curtain;
 }
 
 export async function showCurtain(curtain:Shape) {
@@ -99,11 +104,14 @@ export async function showCurtain(curtain:Shape) {
 
     curtain.width = parentFrame.width;
     curtain.height = parentFrame.height;
+    curtain.x = parentFrame.x;
+    curtain.y = parentFrame.y;
 
     const bracketIndex = curtain.content.indexOf('(');
     curtain.content = ((bracketIndex !== -1) ? curtain.content.substring(0, bracketIndex) : curtain.content)
         + '(' + parentFrame.childrenIds.length + ' elements)';
 
+    await curtain.bringToFront()
     await curtain.sync();
 }
 
@@ -112,9 +120,22 @@ export async function hideCurtain(curtain:Shape) {
     fadeToClear(curtain)
     curtain.style["borderOpacity"] = 0;
     curtain.style["color"] = '#ff000000';
-    curtain.width = 100;
-    curtain.height = 100;
+    curtain.width = 8;
+    curtain.height = 8;
 
+    let parentFrame:Frame;
+    if (curtain.parentId != null) {
+        parentFrame = await miro.board.getById(curtain.parentId) as Frame
+    } else {
+        console.error("Attempted to read parent frame id, but curtain had no parent frame.")
+        return
+        // throw new Error("Attempted to read parent frame id, but curtain had no parent frame.");
+    }
+
+    curtain.x = parentFrame.x+1;
+    curtain.y = parentFrame.y+1;
+
+    await curtain.sendToBack()
     await curtain.sync();
 }
 
