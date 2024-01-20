@@ -16,12 +16,15 @@ export async function addSticky() {
 export function isShapeInsideViewport(shape: Shape | Frame, viewport: Rect): boolean {
     const { x: shapeX, y: shapeY, width: shapeWidth, height: shapeHeight } = shape;
     const { x: viewportX, y: viewportY, width: viewportWidth, height: viewportHeight } = viewport;
+
     const shapeRight = shapeX + shapeWidth;
     const shapeBottom = shapeY + shapeHeight;
     const viewportRight = viewportX + viewportWidth;
     const viewportBottom = viewportY + viewportHeight;
+
     const isLeftInside = shapeX >= viewportX;
     const isRightInside = shapeRight <= viewportRight;
+
     const isTopInside = shapeY >= viewportY;
     const isBottomInside = shapeBottom <= viewportBottom;
 
@@ -81,7 +84,8 @@ export async function createCurtain(frame:Frame) {
 }
 
 export async function showCurtain(curtain:Shape) {
-    curtain.style["fillOpacity"] = 1.0;
+    //curtain.style["fillOpacity"] = 1.0;
+    fadeToOpaque(curtain);
     curtain.style["color"] = '#ffffff';
 
     let parentFrame:Frame;
@@ -104,12 +108,33 @@ export async function showCurtain(curtain:Shape) {
 }
 
 export async function hideCurtain(curtain:Shape) {
-    curtain.style["fillOpacity"] = 0;
-    curtain.style["fillOpacity"] = 0;//getOpaqueness(viewPort,curtain);
+    //curtain.style["fillOpacity"] = 0;
+    fadeToClear(curtain)
     curtain.style["borderOpacity"] = 0;
     curtain.style["color"] = '#ff000000';
     curtain.width = 100;
     curtain.height = 100;
 
     await curtain.sync();
+}
+
+async function fadeToClear(curtain:Shape){
+    const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    for (let i = 0; i < 10; i++){
+        curtain.style["fillOpacity"] =(i/10.0);
+        await curtain.sync();
+        await sleep(100);};
+}
+
+
+async function fadeToOpaque(curtain:Shape){
+    const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    for (let i = 0; i < 10; i++){
+        curtain.style["fillOpacity"] =(1-i/10.0);
+        await curtain.sync()
+        await sleep(100)
+    };
+
 }
