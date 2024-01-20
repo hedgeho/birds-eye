@@ -3,7 +3,6 @@ import type {CustomAction, CustomEvent, Frame} from "@mirohq/websdk-types";
 import {createCurtain} from "./logic";
 
 const createCurtainHandler = async (event: CustomEvent)=> {
-    console.log("Create curtain:\n: " + event)
     let items = event.items;
 
     if (items.length == 0) return;
@@ -11,25 +10,20 @@ const createCurtainHandler = async (event: CustomEvent)=> {
     let frame = items[0] as Frame;
 
     if (frame.title === undefined) {
-      let xs = items.flatMap(item => "x" in item? item.x : []);
-      let ys = items.flatMap(item => "y" in item? item.y : []);
-      let minX = Math.min.apply(null, xs);
-      let maxX = Math.max.apply(null, xs);
-      let minY = Math.min.apply(null, ys);
-      let maxY = Math.max.apply(null, ys);
+      let minX = Math.min.apply(null, items.flatMap(item => "x" in item? item.x - item.width! / 2 : []));
+      let maxX = Math.max.apply(null, items.flatMap(item => "x" in item? item.x + item.width! / 2 : []));
+      let minY = Math.min.apply(null, items.flatMap(item => "y" in item? item.y - item.height! / 2: []));
+      let maxY = Math.max.apply(null, items.flatMap(item => "y" in item? item.y + item.height! / 2: []));
 
-      // TODO: add frame title
       frame = await miro.board.createFrame({
-        x: minX,
-        y: minY,
-        height: maxY - minY,
-        width: maxX - minX,
+        x: (minX + maxX) / 2,
+        y: (minY + maxY) / 2,
+        height: Math.max(100, maxY - minY), // widgets can be less than 100, but not frames
+        width: Math.max(100, maxX - minX),
       })
     }
 
-    let curtain = await createCurtain(frame.x, frame.y, frame.height, frame.width, frame.title);
-    await frame.add(curtain);
-    await frame.sendBehindOf(frame);
+    await createCurtain(frame);
 }
 
 export async function init() {
@@ -53,14 +47,6 @@ export async function init() {
         en: "Create a curtain using the current selection",
       },
       position: 1,
-    },
-    predicate: {
-      $or: [
-        {
-          type: "frame",
-        },
-        // TODO: handle curtains for selections
-      ],
     },
   };
 
