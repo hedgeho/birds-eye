@@ -2,18 +2,14 @@ import * as React from 'react';
 import {createRoot} from 'react-dom/client';
 
 import '../src/assets/style.css';
+import {addSticky} from "./logic";
 
-async function addSticky() {
-  const stickyNote = await miro.board.createStickyNote({
-    content: 'Hello, World!',
-  });
-
-  await miro.board.viewport.zoomTo(stickyNote);
-}
 
 const App: React.FC = () => {
   React.useEffect(() => {
     addSticky();
+
+
   }, []);
 
   return (
@@ -43,5 +39,6 @@ const App: React.FC = () => {
 };
 
 const container = document.getElementById('root');
+// @ts-ignore
 const root = createRoot(container);
 root.render(<App />);
