@@ -1,6 +1,6 @@
 // import * as React from 'react';
 
-async function addSticky() {
+export async function addSticky() {
     const stickyNote = await miro.board.createStickyNote({
         content: 'Hello, World!',
         width: 1000
@@ -9,7 +9,7 @@ async function addSticky() {
     await miro.board.viewport.zoomTo(stickyNote);
 }
 
-async function createCurtain(
+export async function createCurtain(
         frameX:number,
         frameY:number,
         frameHeight:number,
@@ -41,17 +41,14 @@ async function createCurtain(
     });
 }
 
-async function showCurtain(id: number) {
+export async function showCurtain(id: number) {
     return id;
 }
 
 
 // https://miro.com/app/board/uXjVN6tGqpU=/?moveToWidget=3458764576258626775&cot=14
 
-async function hideCurtain(id: number) {
+export async function hideCurtain(id: number) {
     return id;
 }
-
-
-export {addSticky, showCurtain, hideCurtain, createCurtain}
 
