@@ -41,27 +41,24 @@ export async function createCurtain(
         },
         x: frame.x,
         y: frame.y,
-        width: frame.width,//frameWidth,
-        height: frame.height//frameHeight
+        width: frame.width,
+        height: frame.height
     });
 
-    await frame.add(curtain)
-    // await hideCurtain(curtain)
-    return curtain
+    await frame.add(curtain);
 }
 
 export async function showCurtain(curtain:Shape) {
-    return curtain;
+    curtain.style["fillOpacity"] = 1.0;
+    curtain.style["borderOpacity"] = 1.0;
+    curtain.style["color"] = '#ffffff';
 }
 
-
-// https://miro.com/app/board/uXjVN6tGqpU=/?moveToWidget=3458764576258626775&cot=14
-
 export async function hideCurtain(curtain:Shape) {
-    curtain.style["color"] = '#ffffff00';
-    curtain.style["borderOpacity"] = 0.0;
-    curtain.style["fillOpacity"] = 0.0;
-
-    await curtain.sync()
+    curtain.style["fillOpacity"] = 0;
+    curtain.style["borderOpacity"] = 0;
+    curtain.style["color"] = '#ff000000';
+    curtain.width = 100;
+    curtain.height = 100;
 }
 
