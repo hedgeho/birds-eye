@@ -15,7 +15,7 @@ export async function addSticky() {
 
 export async function checkIfCurtainShouldBeHidden(curtain:Shape,viewPortHeight:number,viewPortWidth:number)
 {
-    return curtain.width * curtain.height <= viewPortWidth * viewPortHeight * 10;
+    return curtain.width * curtain.height *10 > viewPortWidth * viewPortHeight ;
 }
 
 export async function createCurtain(
@@ -41,17 +41,20 @@ export async function createCurtain(
         },
         x: frame.x,
         y: frame.y,
-        width: frame.width,
-        height: frame.height
+        width: frame.width,//frameWidth,
+        height: frame.height//frameHeight
     });
 
-    await frame.add(curtain);
+    await frame.add(curtain)
+    // await hideCurtain(curtain)
+    return curtain
 }
 
 export async function showCurtain(curtain:Shape) {
     curtain.style["fillOpacity"] = 1.0;
     curtain.style["borderOpacity"] = 1.0;
     curtain.style["color"] = '#ffffff';
+    curtain.sync()
 }
 
 export async function hideCurtain(curtain:Shape) {
@@ -60,5 +63,6 @@ export async function hideCurtain(curtain:Shape) {
     curtain.style["color"] = '#ff000000';
     curtain.width = 100;
     curtain.height = 100;
+    curtain.sync()
 }
 
