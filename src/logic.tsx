@@ -19,24 +19,24 @@ export async function checkIfCurtainShouldBeHidden(curtain:Shape | Frame,viewPor
     return curtain.width * curtain.height *10 > viewPortWidth * viewPortHeight ;
 }
 
-export async function createCurtain(
-    frame:Frame,
-    fontsize:number=50,
-    curtainColor:string='#2f00ff',
-    textColor:string='#ffffff') {
+export async function createCurtain(frame:Frame) {
+
+    // fontsize should be relative to curtain size
+    const fontsize = Math.min(frame.height, frame.width) / 5.0;
+
     const curtain = await miro.board.createShape({
         content: '<p>' + frame.title + '</p>',
         shape: 'rectangle',
         style: {
-            color: textColor, // Default text color: '#1a1a1a' (black)
-            fillColor: curtainColor, // Default shape fill color: transparent (no fill)
+            color: '#ffffff', // Default text color: '#1a1a1a' (black)
+            fillColor: '#2f00ff', // Default shape fill color: transparent (no fill)
             fontFamily: 'arial', // Default font type for the text
             fontSize: fontsize, // Default font size for the text, in dp
             textAlign: 'center', // Default horizontal alignment for the text
             textAlignVertical: 'middle', // Default vertical alignment for the text
             borderStyle: 'normal', // Default border line style
-            borderOpacity: 1.0, // Default border color opacity: no opacity
-            borderColor: curtainColor, // Default border color: '#ffffff` (white)
+            borderOpacity: 0, // Default border color opacity: no opacity
+            borderColor: '#2f00ff', // Default border color: '#ffffff` (white)
             borderWidth: 0, // Default border width
             fillOpacity: 1.0, // Default fill color opacity: no opacity
         },
@@ -45,6 +45,9 @@ export async function createCurtain(
         width: frame.width,
         height: frame.height
     });
+
+    curtain.content = curtain.content + '(' + frame.childrenIds.length + ' elements)'
+    await curtain.sync()
 
     const storage = miro.board.storage.collection('storage');
 
@@ -65,7 +68,6 @@ export async function createCurtain(
 
 export async function showCurtain(curtain:Shape) {
     curtain.style["fillOpacity"] = 1.0;
-    curtain.style["borderOpacity"] = 1.0;
     curtain.style["color"] = '#ffffff';
 
     let parentFrame:Frame;
@@ -80,12 +82,15 @@ export async function showCurtain(curtain:Shape) {
     curtain.width = parentFrame.width;
     curtain.height = parentFrame.height;
 
+    const bracketIndex = curtain.content.indexOf('(');
+    curtain.content = ((bracketIndex !== -1) ? curtain.content.substring(0, bracketIndex) : curtain.content)
+        + '(' + parentFrame.childrenIds.length + ' elements)';
+
     await curtain.sync();
 }
 
 export async function hideCurtain(curtain:Shape) {
     curtain.style["fillOpacity"] = 0;
-    curtain.style["borderOpacity"] = 0;
     curtain.style["color"] = '#ff000000';
     curtain.width = 100;
     curtain.height = 100;
