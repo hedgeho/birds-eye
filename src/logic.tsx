@@ -16,9 +16,8 @@ export async function addSticky() {
 async function checkIfCurtainShouldBeHidden(curtain:Shape,viewPortHeight:number,viewPortWidth:number)
 {
     return curtain.width * curtain.height <= viewPortWidth * viewPortHeight * 10;
-}           //
+}
 
-async function createCurtain(
     export async function createCurtain(
         frameX:number,
         frameY:number,
