@@ -1,6 +1,8 @@
 
-import type {CustomAction, CustomEvent, Frame} from "@mirohq/websdk-types";
+import type {CustomAction, CustomEvent, Frame, Shape} from "@mirohq/websdk-types";
 import {checkIfCurtainShouldBeHidden, createCurtain, hideCurtain, showCurtain} from "./logic";
+
+import {OpenAIClient, AzureKeyCredential} from "@azure/openai";
 
 const createCurtainHandler = async (event: CustomEvent)=> {
     let items = event.items;
@@ -15,11 +17,27 @@ const createCurtainHandler = async (event: CustomEvent)=> {
       let minY = Math.min.apply(null, items.flatMap(item => "y" in item? item.y - item.height! / 2: []));
       let maxY = Math.max.apply(null, items.flatMap(item => "y" in item? item.y + item.height! / 2: []));
 
+      let itemTexts = items.flatMap(item => "content" in item? item.content : [])
+      let itemTextsMerged = "{" + itemTexts.join("}, {") + "}"
+
+      const openai = new OpenAIClient(
+          "https://dataguild-openai.openai.azure.com/",
+          new AzureKeyCredential(import.meta.env.VITE_OPENAI_API_KEY!),
+          {
+            apiVersion: "2023-07-01-preview",
+          }
+      );
+
+      const completion = await openai.getCompletions("deployment",
+       ["Summarize the following items under 3 words: " + itemTextsMerged],
+      );
+
       frame = await miro.board.createFrame({
         x: (minX + maxX) / 2,
         y: (minY + maxY) / 2,
         height: Math.max(100, maxY - minY), // widgets can be less than 100, but not frames
         width: Math.max(100, maxX - minX),
+        title: completion.choices[0].text,
       })
     }
 
@@ -79,31 +97,62 @@ export async function init() {
 }
 
 export async function poll() {
-  const frame = await miro.board.createFrame({
-    x: 1000,
-    y: 2000,
-    width: 1000,
-    height: 1000
-  })
-  const curtain = await createCurtain(frame)
+  console.log('init')
 
+  const storage = miro.board.storage.collection('storage')
+  let curtains = await storage.get('curtains')
+  console.log(curtains)
+
+  if (!curtains) {
+    const frame = await miro.board.createFrame({
+      x: -10000,
+      y: 2000,
+      width: 1000,
+      height: 1000
+    })
+    await createCurtain(frame)
+  }
 
   for (let i = 0; i < 1e12; i++) {
-    await new Promise((r) => setTimeout(r, 5))
+    await new Promise((r) => setTimeout(r, 2000))
 
     // check the zoom and correct state of all curtains here
 
     const viewport = await miro.board.viewport.get();
 
-    const flag = await checkIfCurtainShouldBeHidden(curtain, viewport.height, viewport.width)
-    const ratio=curtain.width/viewport.width
-    const mappedto01= Math.sin(ratio)
-    if (flag) {
-      console.log('hide '+mappedto01)
-      await hideCurtain(curtain);
-    } else {
-      console.log('show')
-      await showCurtain(curtain);
+    let curtains = await storage.get('curtains')
+
+    if (!curtains) {
+      // no curtains
+      continue
+    }
+    curtains = curtains as Array<string>
+
+    for (let curtain_obj of curtains) {
+      const curtainId = curtain_obj!['id']
+      const frameId = curtain_obj!['frameId']
+      console.log('curtain id', curtainId)
+      const nodes = await miro.board.get({'id': [curtainId, frameId], 'type': ['shape', 'frame']})
+      console.log(nodes)
+      if (nodes.length < 2) {
+        console.log('curtain disappeared')
+        continue
+        // curtain does not exist anymore
+        // todo delete curtain from the list
+      }
+      const curtain = nodes[0] as Shape
+      const frame = nodes[1] as Frame
+
+      const hidden = curtain.width < 101 && curtain.height < 101
+
+      const shouldBeHidden= await checkIfCurtainShouldBeHidden(frame, viewport.height, viewport.width)
+      if (shouldBeHidden && !hidden) {
+        console.log('hide', curtainId)
+        await hideCurtain(curtain);
+      } else if(!shouldBeHidden && hidden) {
+        console.log('show', curtainId)
+        await showCurtain(curtain);
+      }
     }
   }
 }
