@@ -18,7 +18,7 @@ async function createCurtain(
         fontsize:number=50,
         curtainColor:string='#2f00ff',
         textColor:string='#ffffff') {
-    const curtain = await miro.board.createShape({
+    return await miro.board.createShape({
         content: '<p>' + title + '</p>',
         shape: 'rectangle',
         style: {
@@ -39,18 +39,16 @@ async function createCurtain(
         width: frameWidth,
         height: frameHeight
     });
-
-    await miro.board.viewport.zoomTo(curtain);
 }
 
-async function showCurtain(id: int) {
+async function showCurtain(id: number) {
     return id;
 }
 
 
 // https://miro.com/app/board/uXjVN6tGqpU=/?moveToWidget=3458764576258626775&cot=14
 
-async function hideCurtain(id: int) {
+async function hideCurtain(id: number) {
     return id;
 }
 
