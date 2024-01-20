@@ -2,6 +2,8 @@
 import type {CustomAction, CustomEvent, Frame} from "@mirohq/websdk-types";
 import {checkIfCurtainShouldBeHidden, createCurtain, hideCurtain, showCurtain} from "./logic";
 
+import {OpenAIClient, AzureKeyCredential} from "@azure/openai";
+
 const createCurtainHandler = async (event: CustomEvent)=> {
     let items = event.items;
 
@@ -15,11 +17,27 @@ const createCurtainHandler = async (event: CustomEvent)=> {
       let minY = Math.min.apply(null, items.flatMap(item => "y" in item? item.y - item.height! / 2: []));
       let maxY = Math.max.apply(null, items.flatMap(item => "y" in item? item.y + item.height! / 2: []));
 
+      let itemTexts = items.flatMap(item => "content" in item? item.content : [])
+      let itemTextsMerged = "{" + itemTexts.join("}, {") + "}"
+
+      const openai = new OpenAIClient(
+          "https://dataguild-openai.openai.azure.com/",
+          new AzureKeyCredential(import.meta.env.VITE_OPENAI_API_KEY!),
+          {
+            apiVersion: "2023-07-01-preview",
+          }
+      );
+
+      const completion = await openai.getCompletions("deployment",
+       ["Summarize the following items under 3 words: " + itemTextsMerged],
+      );
+
       frame = await miro.board.createFrame({
         x: (minX + maxX) / 2,
         y: (minY + maxY) / 2,
         height: Math.max(100, maxY - minY), // widgets can be less than 100, but not frames
         width: Math.max(100, maxX - minX),
+        title: completion.choices[0].text,
       })
     }
 
