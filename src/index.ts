@@ -1,6 +1,6 @@
 
 import type {CustomAction, CustomEvent, Frame} from "@mirohq/websdk-types";
-import {createCurtain} from "./logic";
+import {checkIfCurtainShouldBeHidden, createCurtain, hideCurtain, showCurtain} from "./logic";
 
 const createCurtainHandler = async (event: CustomEvent)=> {
     let items = event.items;
@@ -54,10 +54,28 @@ export async function init() {
 }
 
 export async function poll() {
+  const frame = await miro.board.createFrame({
+    x: 1000,
+    y: 2000,
+    width: 1000,
+    height: 1000
+  })
+  const curtain = await createCurtain(frame)
   for (let i = 0; i < 1e12; i++) {
     await new Promise((r) => setTimeout(r, 10))
 
     // check the zoom and correct state of all curtains here
+
+    const viewport = await miro.board.viewport.get();
+
+    const flag = await checkIfCurtainShouldBeHidden(curtain, viewport.height, viewport.width)
+    if (flag) {
+      console.log('hide')
+      await hideCurtain(curtain);
+    } else {
+      console.log('show')
+      await showCurtain(curtain);
+    }
   }
 }
 

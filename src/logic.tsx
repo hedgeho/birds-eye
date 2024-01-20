@@ -13,7 +13,7 @@ export async function addSticky() {
 
 // todo    function to be run for each curtain -> if curtain has to be hidden based on viewport
 
-async function checkIfCurtainShouldBeHidden(curtain:Shape,viewPortHeight:number,viewPortWidth:number)
+export async function checkIfCurtainShouldBeHidden(curtain:Shape,viewPortHeight:number,viewPortWidth:number)
 {
     return curtain.width * curtain.height <= viewPortWidth * viewPortHeight * 10;
 }
