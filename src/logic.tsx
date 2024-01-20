@@ -1,5 +1,5 @@
 // import * as React from 'react';
-
+//import { erf } from 'mathjs';
 import {Board, BoardViewport, Frame, Miro, Rect, Shape} from "@mirohq/websdk-types";
 
 export async function addSticky() {
@@ -87,7 +87,7 @@ export async function showCurtain(curtain:Shape) {
 }
 
 export async function hideCurtain(curtain:Shape) {
-    curtain.style["fillOpacity"] = 0;
+    curtain.style["fillOpacity"] = 0;//getOpaqueness(viewPort,curtain);
     curtain.style["borderOpacity"] = 0;
     curtain.style["color"] = '#ff000000';
     curtain.width = 100;
@@ -95,3 +95,22 @@ export async function hideCurtain(curtain:Shape) {
 
     await curtain.sync();
 }
+/*
+function getOpaqueness(viewport: Rect, curtain: Shape): number {
+    // Destructure the rectangle object into its properties
+    const {width: viewportWidth, height: viewportHeight } = viewport;
+    // Destructure the shape object into its properties
+    const {width: curtainWidth, height: curtainHeight } = curtain;
+    // Calculate the area of the rectangle
+    const viewportArea = viewportWidth * viewportHeight;
+    // Calculate the area of the shape
+    const curtainArea = curtainWidth * curtainHeight;
+    // Calculate the ratio of the rectangle's area to the shape's area
+    const ratio = viewportArea / curtainArea;
+
+    // Use the error function to calculate the opaqueness of the shape
+    // The formula is based on the image you sent
+    // You can adjust the parameters as you wish
+    return (erf(-ratio / (10 * Math.sqrt(2))) + 1) / 2;
+
+}*/
