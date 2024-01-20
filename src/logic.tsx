@@ -1,8 +1,6 @@
 // import * as React from 'react';
 
 import {Frame, Shape} from "@mirohq/websdk-types";
-import {Simulate} from "react-dom/test-utils";
-import error = Simulate.error;
 
 export async function addSticky() {
     const stickyNote = await miro.board.createStickyNote({
@@ -47,9 +45,9 @@ export async function createCurtain(
         height: frame.height
     });
 
-    await frame.add(curtain)
-    // await hideCurtain(curtain)
-    return curtain
+    await curtain.setMetadata('curtain', 'true')
+
+    return await frame.add(curtain);
 }
 
 export async function showCurtain(curtain:Shape) {

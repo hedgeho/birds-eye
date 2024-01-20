@@ -61,6 +61,8 @@ export async function poll() {
     height: 1000
   })
   const curtain = await createCurtain(frame)
+
+
   for (let i = 0; i < 1e12; i++) {
     await new Promise((r) => setTimeout(r, 10))
 
