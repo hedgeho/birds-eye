@@ -14,38 +14,44 @@ async function createCurtain(
         frameY:number,
         frameHeight:number,
         frameWidth:number,
-        curtainColor:string='#ffff00',
-        textColor:string='#ff0000') {
-    return await miro.board.createShape({
-        content: '<p>Summary of whatever is inside here</p>',
+        title:string,
+        fontsize:number=50,
+        curtainColor:string='#2f00ff',
+        textColor:string='#ffffff') {
+    const curtain = await miro.board.createShape({
+        content: '<p>' + title + '</p>',
         shape: 'rectangle',
         style: {
-            color: curtainColor, // Default text color: '#1a1a1a' (black)
-            fillColor: textColor, // Default shape fill color: transparent (no fill)
+            color: textColor, // Default text color: '#1a1a1a' (black)
+            fillColor: curtainColor, // Default shape fill color: transparent (no fill)
             fontFamily: 'arial', // Default font type for the text
-            fontSize: 50, // Default font size for the text, in dp
+            fontSize: fontsize, // Default font size for the text, in dp
             textAlign: 'center', // Default horizontal alignment for the text
             textAlignVertical: 'middle', // Default vertical alignment for the text
             borderStyle: 'normal', // Default border line style
             borderOpacity: 1.0, // Default border color opacity: no opacity
-            borderColor: '#ff7400', // Default border color: '#ffffff` (white)
-            borderWidth: 2, // Default border width
+            borderColor: curtainColor, // Default border color: '#ffffff` (white)
+            borderWidth: 0, // Default border width
             fillOpacity: 1.0, // Default fill color opacity: no opacity
         },
-        x: frameX, // Default value: center of the board
-        y: frameY, // Default value: center of the board
+        x: frameX,
+        y: frameY,
         width: frameWidth,
         height: frameHeight
     });
+
+    await miro.board.viewport.zoomTo(curtain);
 }
 
 async function showCurtain(id: int) {
-    return id
+    return id;
 }
 
 
-async function hideCurtain(id) {
+// https://miro.com/app/board/uXjVN6tGqpU=/?moveToWidget=3458764576258626775&cot=14
 
+async function hideCurtain(id: int) {
+    return id;
 }
 
 
