@@ -1,6 +1,8 @@
 // import * as React from 'react';
 
 import {Frame, Shape} from "@mirohq/websdk-types";
+import {Simulate} from "react-dom/test-utils";
+import error = Simulate.error;
 
 export async function addSticky() {
     const stickyNote = await miro.board.createStickyNote({
@@ -52,6 +54,18 @@ export async function showCurtain(curtain:Shape) {
     curtain.style["fillOpacity"] = 1.0;
     curtain.style["borderOpacity"] = 1.0;
     curtain.style["color"] = '#ffffff';
+
+    let parentFrame:Frame;
+    if (curtain.parentId != null) {
+        parentFrame = await miro.board.getById(curtain.parentId) as Frame
+    } else {
+        throw new Error("Attempted to read parent frame id, but curtain had no parent frame.");
+    }
+
+    curtain.width = parentFrame.width;
+    curtain.height = parentFrame.height;
+
+    await curtain.sync();
 }
 
 export async function hideCurtain(curtain:Shape) {
@@ -60,5 +74,6 @@ export async function hideCurtain(curtain:Shape) {
     curtain.style["color"] = '#ff000000';
     curtain.width = 100;
     curtain.height = 100;
-}
 
+    await curtain.sync();
+}
