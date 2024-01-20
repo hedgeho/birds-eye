@@ -10,10 +10,10 @@ async function addSticky() {
 }
 
 async function createCurtain(
-        frameX:int,
-        frameY:int,
-        frameHeight:int,
-        frameWidth:int,
+        frameX:number,
+        frameY:number,
+        frameHeight:number,
+        frameWidth:number,
         curtainColor:string='#ffff00',
         textColor:string='#ff0000') {
     return await miro.board.createShape({
@@ -42,6 +42,7 @@ async function createCurtain(
 async function showCurtain(id: int) {
     return id
 }
+
 
 async function hideCurtain(id) {
 
