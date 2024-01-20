@@ -1,6 +1,7 @@
 // import * as React from 'react';
 
-import {Frame, Shape} from "@mirohq/websdk-types";
+import {BoardNode, Frame, Shape} from "@mirohq/websdk-types";
+import {stat} from "fs";
 
 export async function addSticky() {
     const stickyNote = await miro.board.createStickyNote({
@@ -13,7 +14,7 @@ export async function addSticky() {
 
 // todo    function to be run for each curtain -> if curtain has to be hidden based on viewport
 
-export async function checkIfCurtainShouldBeHidden(curtain:Shape,viewPortHeight:number,viewPortWidth:number)
+export async function checkIfCurtainShouldBeHidden(curtain:Shape | Frame,viewPortHeight:number,viewPortWidth:number)
 {
     return curtain.width * curtain.height *10 > viewPortWidth * viewPortHeight ;
 }
@@ -45,7 +46,19 @@ export async function createCurtain(
         height: frame.height
     });
 
-    await curtain.setMetadata('curtain', 'true')
+    const storage = miro.board.storage.collection('storage');
+
+    let curtains = await storage.get('curtains')
+
+    if (!curtains) {
+        curtains = []
+    }
+    curtains = curtains as Array<string>
+    curtains.push({'id': curtain.id, 'frameId': frame.id})
+    console.log('new curtains', curtains)
+    await storage.set('curtains', curtains);
+
+    await curtain.setMetadata('curtain', 'true');
 
     return await frame.add(curtain);
 }
@@ -59,7 +72,9 @@ export async function showCurtain(curtain:Shape) {
     if (curtain.parentId != null) {
         parentFrame = await miro.board.getById(curtain.parentId) as Frame
     } else {
-        throw new Error("Attempted to read parent frame id, but curtain had no parent frame.");
+        console.error("Attempted to read parent frame id, but curtain had no parent frame.")
+        return
+        // throw new Error("Attempted to read parent frame id, but curtain had no parent frame.");
     }
 
     curtain.width = parentFrame.width;
