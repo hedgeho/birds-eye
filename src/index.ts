@@ -64,15 +64,17 @@ export async function poll() {
 
 
   for (let i = 0; i < 1e12; i++) {
-    await new Promise((r) => setTimeout(r, 10))
+    await new Promise((r) => setTimeout(r, 5))
 
     // check the zoom and correct state of all curtains here
 
     const viewport = await miro.board.viewport.get();
 
     const flag = await checkIfCurtainShouldBeHidden(curtain, viewport.height, viewport.width)
+    const ratio=curtain.width/viewport.width
+    const mappedto01= Math.sin(ratio)
     if (flag) {
-      console.log('hide')
+      console.log('hide '+mappedto01)
       await hideCurtain(curtain);
     } else {
       console.log('show')

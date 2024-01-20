@@ -2,12 +2,13 @@ import * as React from 'react';
 import {createRoot} from 'react-dom/client';
 
 import '../src/assets/style.css';
-import {addSticky} from "./logic";
+
+
+
 
 
 const App: React.FC = () => {
   React.useEffect(() => {
-    addSticky();
 
 
   }, []);
