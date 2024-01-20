@@ -1,5 +1,7 @@
 // import * as React from 'react';
 
+import {Shape} from "@mirohq/websdk-types";
+
 export async function addSticky() {
     const stickyNote = await miro.board.createStickyNote({
         content: 'Hello, World!',
@@ -9,7 +11,15 @@ export async function addSticky() {
     await miro.board.viewport.zoomTo(stickyNote);
 }
 
-export async function createCurtain(
+// todo    function to be run for each curtain -> if curtain has to be hidden based on viewport
+
+async function checkIfCurtainShouldBeHidden(curtain:Shape,viewPortHeight:number,viewPortWidth:number)
+{
+    return curtain.width * curtain.height <= viewPortWidth * viewPortHeight * 10;
+}           //
+
+async function createCurtain(
+    export async function createCurtain(
         frameX:number,
         frameY:number,
         frameHeight:number,
