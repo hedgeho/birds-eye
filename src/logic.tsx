@@ -13,27 +13,24 @@ export async function addSticky() {
 
 // todo    function to be run for each curtain -> if curtain has to be hidden based on viewport
 
+export function isShapeInsideViewport(shape: Shape | Frame, viewport: Rect): boolean {
+    const { x: shapeX, y: shapeY, width: shapeWidth, height: shapeHeight } = shape;
+    const { x: viewportX, y: viewportY, width: viewportWidth, height: viewportHeight } = viewport;
+    const shapeRight = shapeX + shapeWidth;
+    const shapeBottom = shapeY + shapeHeight;
+    const viewportRight = viewportX + viewportWidth;
+    const viewportBottom = viewportY + viewportHeight;
+    const isLeftInside = shapeX >= viewportX;
+    const isRightInside = shapeRight <= viewportRight;
+    const isTopInside = shapeY >= viewportY;
+    const isBottomInside = shapeBottom <= viewportBottom;
+
+    // Return the logical AND of the four conditions
+    return isLeftInside && isRightInside && isTopInside && isBottomInside;
+}
+
 export async function checkIfCurtainShouldBeHidden(curtain:Shape | Frame,viewPort:Rect) {
-
-    function isShapeInsideViewport(shape: Shape | Frame, viewport: Rect): boolean {
-        const { x: shapeX, y: shapeY, width: shapeWidth, height: shapeHeight } = shape;
-        const { x: viewportX, y: viewportY, width: viewportWidth, height: viewportHeight } = viewport;
-        const shapeRight = shapeX + shapeWidth;
-        const shapeBottom = shapeY + shapeHeight;
-        const viewportRight = viewportX + viewportWidth;
-        const viewportBottom = viewportY + viewportHeight;
-        const isLeftInside = shapeX >= viewportX;
-        const isRightInside = shapeRight <= viewportRight;
-        const isTopInside = shapeY >= viewportY;
-        const isBottomInside = shapeBottom <= viewportBottom;
-
-        // Return the logical AND of the four conditions
-        return isLeftInside && isRightInside && isTopInside && isBottomInside;
-    }
-
-
-    if (isShapeInsideViewport(curtain,viewPort)){return curtain.width * curtain.height * 10 > viewPort.height* viewPort.width;}
-    else return false
+    return curtain.width * curtain.height * 10 > viewPort.height* viewPort.width;
 }
 
 export async function createCurtain(frame:Frame) {
@@ -66,9 +63,9 @@ export async function createCurtain(frame:Frame) {
     curtain.content = curtain.content + '(' + frame.childrenIds.length + ' elements)'
     await curtain.sync()
 
-    const storage = miro.board.storage.collection('storage');
+    const storage= miro.board.storage.collection('storage');
 
-    let curtains = await storage.get('curtains')
+    let curtains= await storage.get('curtains')
 
     if (!curtains) {
         curtains = []

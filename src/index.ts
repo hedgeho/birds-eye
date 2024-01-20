@@ -1,6 +1,6 @@
 
 import type {CustomAction, CustomEvent, Frame, Shape} from "@mirohq/websdk-types";
-import {checkIfCurtainShouldBeHidden, createCurtain, hideCurtain, showCurtain} from "./logic";
+import {checkIfCurtainShouldBeHidden, createCurtain, hideCurtain, isShapeInsideViewport, showCurtain} from "./logic";
 
 import {OpenAIClient, AzureKeyCredential} from "@azure/openai";
 
@@ -103,15 +103,15 @@ export async function poll() {
   let curtains = await storage.get('curtains')
   console.log(curtains)
 
-  if (!curtains) {
-    const frame = await miro.board.createFrame({
-      x: -10000,
-      y: 2000,
-      width: 1000,
-      height: 1000
-    })
-    await createCurtain(frame)
-  }
+  // if (!curtains) {
+  //   const frame = await miro.board.createFrame({
+  //     x: -10000,
+  //     y: 2000,
+  //     width: 1000,
+  //     height: 1000
+  //   })
+  //   await createCurtain(frame)
+  // }
 
   for (let i = 0; i < 1e12; i++) {
     await new Promise((r) => setTimeout(r, 2000))
@@ -128,6 +128,8 @@ export async function poll() {
     }
     curtains = curtains as Array<string>
 
+    let curtainsToRemove: string[] = []
+
     for (let curtain_obj of curtains) {
       const curtainId = curtain_obj!['id']
       const frameId = curtain_obj!['frameId']
@@ -136,23 +138,32 @@ export async function poll() {
       console.log(nodes)
       if (nodes.length < 2) {
         console.log('curtain disappeared')
+        curtainsToRemove.push(curtainId)
         continue
         // curtain does not exist anymore
         // todo delete curtain from the list
       }
       const curtain = nodes[0] as Shape
-      const frame = nodes[1] as Frame
+      const frame= nodes[1] as Frame
 
-      const hidden = curtain.width < 101 && curtain.height < 101
+      const hidden= curtain.width < 101 && curtain.height < 101
 
-      const shouldBeHidden= await checkIfCurtainShouldBeHidden(frame, viewport.height, viewport.width)
+      if (!isShapeInsideViewport(frame, viewport)) {
+        continue
+      }
+
+      const shouldBeHidden= await checkIfCurtainShouldBeHidden(frame, viewport)
       if (shouldBeHidden && !hidden) {
         console.log('hide', curtainId)
         await hideCurtain(curtain);
       } else if(!shouldBeHidden && hidden) {
-        console.log('show', curtainId)
+        console.log('show', curtainId);
         await showCurtain(curtain);
       }
+    }
+    if (curtainsToRemove.length > 0) {
+      curtains = curtains.filter(v => !curtainsToRemove.includes(v!['id']));
+      await storage.set('curtains', curtains);
     }
   }
 }
