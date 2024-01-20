@@ -48,6 +48,31 @@ export async function init() {
       },
       position: 1,
     },
+    predicate: {
+      $or: [
+        {
+          type: "frame",
+        },
+        {
+          type: "sticky_note",
+        },
+        {
+          type: "text",
+        },
+        {
+          type: "shape",
+        },
+        {
+          type: "connector",
+        },
+        {
+          type: "card",
+        },
+        {
+          type: "app_card",
+        },
+      ],
+    }
   };
 
   await miro.board.experimental.action.register(createCurtainAction);
