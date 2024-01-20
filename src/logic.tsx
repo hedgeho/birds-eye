@@ -11,11 +11,18 @@ export async function addSticky() {
     await miro.board.viewport.zoomTo(stickyNote);
 }
 
+// todo    function to be run for each curtain -> if curtain has to be hidden based on viewport
+
+async function checkIfCurtainShouldBeHidden(curtain:Shape,viewPortHeight:number,viewPortWidth:number)
+{
+    return curtain.width * curtain.height <= viewPortWidth * viewPortHeight * 10;
+}
+
 export async function createCurtain(
-        frame:Frame,
-        fontsize:number=50,
-        curtainColor:string='#2f00ff',
-        textColor:string='#ffffff') {
+    frame:Frame,
+    fontsize:number=50,
+    curtainColor:string='#2f00ff',
+    textColor:string='#ffffff') {
     const curtain = await miro.board.createShape({
         content: '<p>' + frame.title + '</p>',
         shape: 'rectangle',
