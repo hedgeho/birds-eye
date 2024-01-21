@@ -118,8 +118,8 @@ export async function poll() {
     //   await createCurtain(frame)
     // }
 
-    for (let i = 0; i < 1e12; i++) {
-        await new Promise((r) => setTimeout(r, 3000))
+  for (let i = 0; i < 1e12; i++) {
+    await new Promise((r) => setTimeout(r, 150))
 
         // check the zoom and correct state of all curtains here
 
@@ -136,43 +136,52 @@ export async function poll() {
 
         let curtainsToRemove: string[] = []
 
-        for (let curtain_obj of curtains) {
-            const curtainId = curtain_obj!['id']
-            const frameId = curtain_obj!['frameId']
-            console.log('curtain id', curtainId)
-            const nodes = await miro.board.get({'id': [curtainId, frameId], 'type': ['shape', 'frame']})
-            console.log(nodes)
-            if (nodes.length < 2) {
-                console.log('curtain disappeared')
-                curtainsToRemove.push(curtainId)
-                continue
-                // curtain does not exist anymore
-                // todo delete curtain from the list
-            }
-            const curtain = nodes[0] as Shape
-            const frame = nodes[1] as Frame
+    const nodes= await miro.board.get(
+        {'id': [...curtains.map(c => c!['id']), ...curtains.map(c => c!['frameId'])], 'type': ['shape', 'frame']})
+    let frameI = nodes.findIndex(node => node.type === 'frame')
+    let curtainI = 0
 
-            const hidden = curtain.width < 101 && curtain.height < 101
+    for (let curtain_obj of curtains) {
+      const curtainId = curtain_obj!['id']
+      const frameId = curtain_obj!['frameId']
+      console.log('curtain id', curtainId)
 
-            console.log(isShapeInsideViewport(frame, viewport))
-            if (!isShapeInsideViewport(frame, viewport)) {
-                continue
-            }
+      if (nodes.length < 2) {
+        console.log('curtain disappeared')
+        curtainsToRemove.push(curtainId)
+        continue
+        // curtain does not exist anymore
+        // todo delete curtain from the list
+      }
+      const curtain = nodes.find(node => node.id === curtainId) as Shape
+      const frame= nodes.find(node => node.id === frameId) as Frame
 
-            const shouldBeHidden = await checkIfCurtainShouldBeHidden(frame, viewport)
-            if (shouldBeHidden && !hidden) {
-                console.log('hide', curtainId)
-                await hideCurtain(curtain);
-            } else if (!shouldBeHidden && hidden) {
-                console.log('show', curtainId);
-                await showCurtain(curtain);
-            }
+      if (!curtain || !frame) {
+        continue
+      }
+
+        const hidden = curtain.width < 101 && curtain.height < 101
+
+        // console.log(isShapeInsideViewport(frame, viewport))
+        if (!isShapeInsideViewport(frame, viewport)) {
+          continue
         }
-        if (curtainsToRemove.length > 0) {
-            curtains = curtains.filter(v => !curtainsToRemove.includes(v!['id']));
-            await storage.set('curtains', curtains);
+
+        const shouldBeHidden = await checkIfCurtainShouldBeHidden(frame, viewport)
+        if (shouldBeHidden && !hidden) {
+          console.log('hide', curtainId)
+          await hideCurtain(curtain);
+        } else if (!shouldBeHidden && hidden) {
+          console.log('show', curtainId);
+          await showCurtain(curtain);
         }
+
     }
+    if (curtainsToRemove.length > 0) {
+      curtains = curtains.filter(v => !curtainsToRemove.includes(v!['id']));
+      await storage.set('curtains', curtains);
+    }
+  }
 }
 
 
