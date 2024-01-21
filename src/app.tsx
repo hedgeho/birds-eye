@@ -18,7 +18,7 @@ const App: React.FC = () => {
 
 
             <div className="cs1 ce12">
-                <img src="/src/assets/tutorialGIf.gif" alt="Tutorial gif"/>
+                <img src="/src/assets/tutorialGif.gif" alt="Tutorial gif"/>
             </div>
 
 
