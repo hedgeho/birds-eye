@@ -1,10 +1,29 @@
-## Birds Eye
+# Bird's-Eye
 
-**&nbsp;ℹ&nbsp;Note**:
+## Situation
 
-- We recommend a Chromium-based web browser for local development with HTTP. \
-  Safari enforces HTTPS; therefore, it doesn't allow localhost through HTTP.
-- For more information, visit our [developer documentation](https://developers.miro.com).
+Users often encounter large boards that may be poorly organized or to complex to comprehend quickly. 
+
+## Problem
+
+- Large miro board feel overwhelming, cluttered and hard to navigate.
+- Content that is irrelevant at a given moment distracts from the current task.
+- Presentations may lack structure and guidance for the viewers on where to concentrate
+
+## Solution
+
+Our solution is to create "curtains" that hide the contents underneath, when the user's focus is not inside the area.
+When the user is looking at the contents the "curtain" hides and becomes a simple frame.
+
+Implemented functionality:
+- Creation of a "curtain" from a selection of items. In this case an AI-generated title will be offered.
+- Adding a "curtain" to an existing frame.
+- Hiding a "curtain" when a user is zoomed in the covered items.
+- Showing a "curtain" when a user is far or outside of view scope.
+
+## Experimental features used
+
+Custom actions, ...
 
 ### How to start locally
 
