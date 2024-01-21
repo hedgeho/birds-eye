@@ -1,7 +1,7 @@
 // import * as React from 'react';
 
 import {Board, BoardViewport, Frame, Miro, Rect, Shape} from "@mirohq/websdk-types";
-import {random, string} from "mathjs";
+import {random, string, max} from "mathjs";
 
 export async function addSticky() {
     const stickyNote = await miro.board.createStickyNote({
@@ -16,22 +16,21 @@ export async function addSticky() {
 
 export function isShapeInsideViewport(shape: Shape | Frame, viewport: Rect): boolean {
     const { x: shapeX, y: shapeY, width: shapeWidth, height: shapeHeight } = shape;
-    console.log(shapeX, shapeY, viewport)
+    // console.log(shapeX, shapeY, viewport)
     const { x: viewportX, y: viewportY, width: viewportWidth, height: viewportHeight } = viewport;
 
-    const shapeRight = shapeX + shapeWidth;
-    const shapeBottom = shapeY + shapeHeight;
+    const shapeRight = shapeX + shapeWidth/2;
+    const shapeBottom = shapeY + shapeHeight/2;
     const viewportRight = viewportX + viewportWidth;
     const viewportBottom = viewportY + viewportHeight;
 
-    const isLeftInside = shapeX >= viewportX;
+    const isLeftInside = shapeX - shapeWidth/2 >= viewportX;
     const isRightInside = shapeRight <= viewportRight;
 
-    const isTopInside = shapeY >= viewportY;
+    const isTopInside = shapeY - shapeHeight/2 >= viewportY ;
     const isBottomInside = shapeBottom <= viewportBottom;
 
-    // Return the logical AND of the four conditions
-    return isLeftInside && isRightInside && isTopInside && isBottomInside;
+    return isLeftInside && isRightInside && isBottomInside && isTopInside;
 }
 
 export async function checkIfCurtainShouldBeHidden(curtain:Shape | Frame,viewPort:Rect) {

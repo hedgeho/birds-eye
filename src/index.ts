@@ -1,6 +1,6 @@
 
 import type {CustomAction, CustomEvent, Frame, Item, Shape} from "@mirohq/websdk-types";
-import {checkIfCurtainShouldBeHidden, createCurtain, hideCurtain, showCurtain} from "./logic";
+import {checkIfCurtainShouldBeHidden, createCurtain, hideCurtain, isShapeInsideViewport, showCurtain} from "./logic";
 
 import {OpenAIClient, AzureKeyCredential} from "@azure/openai";
 import {convert} from "html-to-text";
@@ -191,9 +191,10 @@ export async function poll() {
 
       const hidden= curtain.width < 101 && curtain.height < 101
 
-      // if (!isShapeInsideViewport(frame, viewport)) {
-      //   continue
-      // }
+      console.log(isShapeInsideViewport(frame, viewport))
+      if (!isShapeInsideViewport(frame, viewport)) {
+        continue
+      }
 
       const shouldBeHidden= await checkIfCurtainShouldBeHidden(frame, viewport)
       if (shouldBeHidden && !hidden) {
