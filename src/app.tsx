@@ -7,27 +7,23 @@ import '../src/assets/style.css';
 const App: React.FC = () => {
     return (
         <div className="grid wrapper">
+
             <div className="cs1 ce12">
-                <img src="/src/assets/congratulations.png" alt=""/>
+                <img src="/src/assets/tutorialGif(madeIn2004).gif" alt=""/>
             </div>
+
             <div className="cs1 ce12">
-                <h1>Congratulations!</h1>
-                <p>You've just created your first Miro app!</p>
-                <p>
-                    To explore more and build your own app, see the Miro Developer
-                    Platform documentation.
-                </p>
+                <h1>HowTOs:</h1>
+                <p>1: Create a frame and highlight it.</p>
+                <p>2: Press the "Create a curtain" button.</p>
+                <p>3: You just created your first Birdseye curtain!</p>
+                <p>4: Go and create visual and intuitive presentations or declutter you board.</p>
+
             </div>
-            <div className="cs1 ce12">
-                <a
-                    className="button button-primary"
-                    target="_blank"
-                    href="https://developers.miro.com"
-                >
-                    Read the documentation
-                </a>
-            </div>
+
+
         </div>
+
     );
 };
 
