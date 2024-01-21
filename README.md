@@ -40,6 +40,10 @@ By implementing this solution, we aim to simplify the navigation of large Miro b
 
 - Custom actions: Our core functionality is structured around this feature.
 
+### Further improvements 
+
+- Multi-user support (almost implemented)
+
 ### How to start locally
 
 - Add a `.env` file containing an `VITE_OPENAI_API_KEY` that refers to a key for an azure openai service.
