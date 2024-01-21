@@ -3,6 +3,27 @@ import type {CustomAction, CustomEvent, Frame, Shape} from "@mirohq/websdk-types
 import {checkIfCurtainShouldBeHidden, createCurtain, hideCurtain, isShapeInsideViewport, showCurtain} from "./logic";
 
 import {OpenAIClient, AzureKeyCredential} from "@azure/openai";
+import {convert} from "html-to-text";
+
+type PositionedItem = {
+  x: number,
+  y: number,
+} & Item;
+
+const getGlobalCoordinates = async (item: PositionedItem): Promise<{x:number, y:number}> => {
+  var x = item.x;
+  var y = item.y;
+
+  if (item.parentId) {
+    let parent = await miro.board.getById(item.parentId);
+    if (parent && "x" in parent) {
+      let offset = await getGlobalCoordinates(parent);
+      x += offset.x - parent.width!/2;
+      y += offset.y - parent.height!/2;
+    }
+  }
+  return {x, y};
+};
 
 const createCurtainHandler = async (event: CustomEvent)=> {
     let items = event.items;
