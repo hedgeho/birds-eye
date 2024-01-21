@@ -94,7 +94,8 @@ export async function init() {
         },
         predicate: {
             $or: [{type: "frame"}, {type: "sticky_note"}, {type: "text"}, {type: "shape"},
-                {type: "connector"}, {type: "card"}, {type: "image"}],
+                {type: "connector"}, {type: "card"}, {type: "image"}, {type: "app_card"},
+                {type: "embed"}, {type: "mindmap_node"}, {type: "preview"}],
         }
     };
 
