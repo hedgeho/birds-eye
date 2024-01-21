@@ -144,7 +144,7 @@ export async function hideCurtain(curtain:Shape) {
 async function fadeToOpaque(curtain:Shape){
     const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    for (let i = 0; i < 10; i++){
+    for (let i = 1; i <= 10; i++){
         curtain.style["fillOpacity"] =(i/10.0);
         await curtain.sync();
         // await sleep(1);
