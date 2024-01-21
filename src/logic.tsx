@@ -15,6 +15,7 @@ export async function addSticky() {
 
 export function isShapeInsideViewport(shape: Shape | Frame, viewport: Rect): boolean {
     const { x: shapeX, y: shapeY, width: shapeWidth, height: shapeHeight } = shape;
+    console.log(shapeX, shapeY, viewport)
     const { x: viewportX, y: viewportY, width: viewportWidth, height: viewportHeight } = viewport;
 
     const shapeRight = shapeX + shapeWidth;
@@ -90,7 +91,7 @@ export async function createCurtain(frame:Frame) {
 
 export async function showCurtain(curtain:Shape) {
     //curtain.style["fillOpacity"] = 1.0;
-    fadeToOpaque(curtain);
+
     curtain.style["color"] = '#ffffff';
 
     let parentFrame:Frame;
@@ -104,20 +105,21 @@ export async function showCurtain(curtain:Shape) {
 
     curtain.width = parentFrame.width;
     curtain.height = parentFrame.height;
-    curtain.x = parentFrame.x;
-    curtain.y = parentFrame.y;
+    //curtain.x = parentFrame.x;
+    //curtain.y = parentFrame.y;
 
     const bracketIndex = curtain.content.indexOf('(');
     curtain.content = ((bracketIndex !== -1) ? curtain.content.substring(0, bracketIndex) : curtain.content)
         + '(' + parentFrame.childrenIds.length + ' elements)';
 
-    await curtain.bringToFront()
+    //await curtain.bringToFront()
     await curtain.sync();
+    await fadeToOpaque(curtain);
 }
 
 export async function hideCurtain(curtain:Shape) {
     //curtain.style["fillOpacity"] = 0;
-    fadeToClear(curtain)
+    await fadeToClear(curtain)
     curtain.style["borderOpacity"] = 0;
     curtain.style["color"] = '#ff000000';
     curtain.width = 8;
@@ -132,30 +134,31 @@ export async function hideCurtain(curtain:Shape) {
         // throw new Error("Attempted to read parent frame id, but curtain had no parent frame.");
     }
 
-    curtain.x = parentFrame.x+1;
-    curtain.y = parentFrame.y+1;
+    //curtain.x = parentFrame.x+1;
+    //curtain.y = parentFrame.y+1;
 
-    await curtain.sendToBack()
+    //await curtain.sendToBack()
     await curtain.sync();
 }
-
-async function fadeToClear(curtain:Shape){
-    const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-    for (let i = 0; i < 10; i++){
-        curtain.style["fillOpacity"] =(i/10.0);
-        await curtain.sync();
-        await sleep(100);};
-}
-
 
 async function fadeToOpaque(curtain:Shape){
     const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
     for (let i = 0; i < 10; i++){
+        curtain.style["fillOpacity"] =(i/10.0);
+        await curtain.sync();
+        // await sleep(1);
+    };
+}
+
+
+async function fadeToClear(curtain:Shape){
+    const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    for (let i = 0; i < 10; i++){
         curtain.style["fillOpacity"] =(1-i/10.0);
         await curtain.sync()
-        await sleep(100)
+        // await sleep(10)
     };
 
 }

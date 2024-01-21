@@ -114,13 +114,14 @@ export async function poll() {
   // }
 
   for (let i = 0; i < 1e12; i++) {
-    await new Promise((r) => setTimeout(r, 2000))
+    await new Promise((r) => setTimeout(r, 1000))
 
     // check the zoom and correct state of all curtains here
 
     const viewport = await miro.board.viewport.get();
 
     let curtains = await storage.get('curtains')
+    console.log(curtains)
 
     if (!curtains) {
       // no curtains
@@ -148,9 +149,9 @@ export async function poll() {
 
       const hidden= curtain.width < 101 && curtain.height < 101
 
-      if (!isShapeInsideViewport(frame, viewport)) {
-        continue
-      }
+      // if (!isShapeInsideViewport(frame, viewport)) {
+      //   continue
+      // }
 
       const shouldBeHidden= await checkIfCurtainShouldBeHidden(frame, viewport)
       if (shouldBeHidden && !hidden) {
