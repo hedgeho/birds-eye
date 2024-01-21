@@ -111,7 +111,7 @@ export async function showCurtain(curtain:Shape) {
 export async function hideCurtain(curtain:Shape) {
     await fadeToClear(curtain)
     curtain.style["borderOpacity"] = 0;
-    curtain.style["color"] = pickColor();
+    curtain.style["color"] = '#ffffff';
     curtain.width = 8;
     curtain.height = 8;
 
