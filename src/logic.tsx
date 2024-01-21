@@ -1,16 +1,6 @@
 // import * as React from 'react';
 
-import {Board, BoardViewport, Frame, Miro, Rect, Shape} from "@mirohq/websdk-types";
-import {random, string, max} from "mathjs";
-
-export async function addSticky() {
-    const stickyNote = await miro.board.createStickyNote({
-        content: 'Hello, World!',
-        width: 1000
-    });
-
-    await miro.board.viewport.zoomTo(stickyNote);
-}
+import {Frame, Rect, Shape} from "@mirohq/websdk-types";
 
 // todo    function to be run for each curtain -> if curtain has to be hidden based on viewport
 
