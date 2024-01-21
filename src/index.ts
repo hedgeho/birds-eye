@@ -86,7 +86,7 @@ export async function init() {
             label: {
                 en: "Create a curtain",
             },
-            icon: "stack",
+            icon: "keycap",
             description: {
                 en: "Create a curtain using the current selection",
             },
