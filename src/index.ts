@@ -1,5 +1,5 @@
 import type {CustomAction, CustomEvent, Frame, Item, Shape} from "@mirohq/websdk-types";
-import {checkIfCurtainShouldBeHidden, createCurtain, hideCurtain, isShapeInsideViewport, showCurtain} from "./logic";
+import {checkIfRegionShouldBeHidden, createRegion, hideRegion, isShapeInsideViewport, showRegion} from "./logic";
 import {getGlobalCoordinates} from "./utils";
 
 import {convert} from "html-to-text";
@@ -45,13 +45,13 @@ async function findBoundingBox(items: Item[]) {
     }
 }
 
-const handleCreateCurtain = async (event: CustomEvent) => {
+const handleCreateRegion = async (event: CustomEvent) => {
     let items = event.items;
 
     if (items.length == 0) return;
 
     if (items[0].type == "frame") {
-        await createCurtain(items[0] as Frame);
+        await createRegion(items[0] as Frame);
         return;
     }
 
@@ -67,7 +67,7 @@ const handleCreateCurtain = async (event: CustomEvent) => {
         title: frameTitle,
     })
 
-    await createCurtain(frame);
+    await createRegion(frame);
 }
 
 export async function init() {
@@ -76,19 +76,19 @@ export async function init() {
     });
 
     await miro.board.ui.on(
-        "custom:create-curtain",
-        handleCreateCurtain
+        "custom:create-region",
+        handleCreateRegion
     );
 
-    const createCurtainAction: CustomAction = {
-        event: "create-curtain",
+    const createRegionAction: CustomAction = {
+        event: "create-region",
         ui: {
             label: {
-                en: "Create a curtain",
+                en: "Create a region",
             },
             icon: "keycap",
             description: {
-                en: "Create a curtain using the current selection",
+                en: "Create a region using the current selection",
             },
             position: 1,
         },
@@ -99,88 +99,88 @@ export async function init() {
         }
     };
 
-    await miro.board.experimental.action.register(createCurtainAction);
+    await miro.board.experimental.action.register(createRegionAction);
 }
 
 export async function poll() {
     console.log('init')
 
     const storage = miro.board.storage.collection('storage')
-    let curtains = await storage.get('curtains')
-    console.log(curtains)
+    let regions = await storage.get('regions')
+    console.log(regions)
 
-    // if (!curtains) {
+    // if (!regions) {
     //   const frame = await miro.board.createFrame({
     //     x: -10000,
     //     y: 2000,
     //     width: 1000,
     //     height: 1000
     //   })
-    //   await createCurtain(frame)
+    //   await createRegion(frame)
     // }
 
   for (let i = 0; i < 1e12; i++) {
     await new Promise((r) => setTimeout(r, 150))
 
-        // check the zoom and correct state of all curtains here
+        // check the zoom and correct state of all regions here
 
         const viewport = await miro.board.viewport.get();
 
-        let curtains = await storage.get('curtains')
-        console.log(curtains)
+        let regions = await storage.get('regions')
+        console.log(regions)
 
-        if (!curtains) {
-            // no curtains
+        if (!regions) {
+            // no regions
             continue
         }
-        curtains = curtains as Array<string>
+        regions = regions as Array<string>
 
-        let curtainsToRemove: string[] = []
+        let regionsToRemove: string[] = []
 
     const nodes= await miro.board.get(
-        {'id': [...curtains.map(c => c!['id']), ...curtains.map(c => c!['frameId'])], 'type': ['shape', 'frame']})
+        {'id': [...regions.map(c => c!['id']), ...regions.map(c => c!['frameId'])], 'type': ['shape', 'frame']})
     let frameI = nodes.findIndex(node => node.type === 'frame')
-    let curtainI = 0
+    let regionI = 0
 
-    for (let curtain_obj of curtains) {
-      const curtainId = curtain_obj!['id']
-      const frameId = curtain_obj!['frameId']
-      console.log('curtain id', curtainId)
+    for (let region_obj of regions) {
+      const regionId = region_obj!['id']
+      const frameId = region_obj!['frameId']
+      console.log('region id', regionId)
 
       if (nodes.length < 2) {
-        console.log('curtain disappeared')
-        curtainsToRemove.push(curtainId)
+        console.log('region disappeared')
+        regionsToRemove.push(regionId)
         continue
-        // curtain does not exist anymore
-        // todo delete curtain from the list
+        // region does not exist anymore
+        // todo delete region from the list
       }
-      const curtain = nodes.find(node => node.id === curtainId) as Shape
+      const region = nodes.find(node => node.id === regionId) as Shape
       const frame= nodes.find(node => node.id === frameId) as Frame
 
-      if (!curtain || !frame) {
+      if (!region || !frame) {
         continue
       }
 
-        const hidden = curtain.width < 101 && curtain.height < 101
+        const hidden = region.width < 101 && region.height < 101
 
         // console.log(isShapeInsideViewport(frame, viewport))
         if (!isShapeInsideViewport(frame, viewport)) {
           continue
         }
 
-        const shouldBeHidden = await checkIfCurtainShouldBeHidden(frame, viewport)
+        const shouldBeHidden = await checkIfRegionShouldBeHidden(frame, viewport)
         if (shouldBeHidden && !hidden) {
-          console.log('hide', curtainId)
-          await hideCurtain(curtain);
+          console.log('hide', regionId)
+          await hideRegion(region);
         } else if (!shouldBeHidden && hidden) {
-          console.log('show', curtainId);
-          await showCurtain(curtain);
+          console.log('show', regionId);
+          await showRegion(region);
         }
 
     }
-    if (curtainsToRemove.length > 0) {
-      curtains = curtains.filter(v => !curtainsToRemove.includes(v!['id']));
-      await storage.set('curtains', curtains);
+    if (regionsToRemove.length > 0) {
+      regions = regions.filter(v => !regionsToRemove.includes(v!['id']));
+      await storage.set('regions', regions);
     }
   }
 }

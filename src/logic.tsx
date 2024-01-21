@@ -2,7 +2,7 @@
 
 import {Frame, Rect, Shape} from "@mirohq/websdk-types";
 
-// todo    function to be run for each curtain -> if curtain has to be hidden based on viewport
+// todo    function to be run for each region -> if region has to be hidden based on viewport
 
 export function isShapeInsideViewport(shape: Shape | Frame, viewport: Rect): boolean {
     const { x: shapeX, y: shapeY, width: shapeWidth, height: shapeHeight } = shape;
@@ -26,16 +26,16 @@ export function isShapeInsideViewport(shape: Shape | Frame, viewport: Rect): boo
     return fillRatio > 0.5 || presenceRatio > 0.5;
 }
 
-export async function checkIfCurtainShouldBeHidden(curtain:Shape | Frame,viewPort:Rect) {
-    return curtain.width * curtain.height * 10 > viewPort.height* viewPort.width;
+export async function checkIfRegionShouldBeHidden(region:Shape | Frame,viewPort:Rect) {
+    return region.width * region.height * 10 > viewPort.height* viewPort.width;
 }
 
-export async function createCurtain(frame:Frame) {
+export async function createRegion(frame:Frame) {
 
-    // fontsize should be relative to curtain size
+    // fontsize should be relative to region size
     const fontsize = Math.min(frame.height, frame.width) / 6.9;
 
-    const curtain = await miro.board.createShape({
+    const region = await miro.board.createShape({
         content:
             ((frame.title.trim() == "")
                 ? ('<b>Title here</b><br>') : ('<b>' + frame.title + '</b><br>'))
@@ -60,94 +60,94 @@ export async function createCurtain(frame:Frame) {
         height: frame.height
     });
 
-    await curtain.sync()
+    await region.sync()
 
     const storage= miro.board.storage.collection('storage');
 
-    let curtains= await storage.get('curtains')
+    let regions= await storage.get('regions')
 
-    if (!curtains) {
-        curtains = []
+    if (!regions) {
+        regions = []
     }
-    curtains = curtains as Array<string>
-    curtains.push({'id': curtain.id, 'frameId': frame.id})
-    console.log('new curtains', curtains)
-    await storage.set('curtains', curtains);
+    regions = regions as Array<string>
+    regions.push({'id': region.id, 'frameId': frame.id})
+    console.log('new regions', regions)
+    await storage.set('regions', regions);
 
-    await curtain.setMetadata('curtain', 'true');
+    await region.setMetadata('region', 'true');
 
 
-    await frame.add(curtain);
+    await frame.add(region);
     frame.title = "";
     await frame.sync();
 
-    return curtain;
+    return region;
 }
 
-export async function showCurtain(curtain:Shape) {
+export async function showRegion(region:Shape) {
     let parentFrame:Frame;
-    if (curtain.parentId != null) {
-        parentFrame = await miro.board.getById(curtain.parentId) as Frame
+    if (region.parentId != null) {
+        parentFrame = await miro.board.getById(region.parentId) as Frame
     } else {
-        console.error("Attempted to read parent frame id, but curtain had no parent frame.")
+        console.error("Attempted to read parent frame id, but region had no parent frame.")
         return
-        // throw new Error("Attempted to read parent frame id, but curtain had no parent frame.");
+        // throw new Error("Attempted to read parent frame id, but region had no parent frame.");
     }
 
-    curtain.width = parentFrame.width;
-    curtain.height = parentFrame.height;
-    //curtain.x = parentFrame.x;
-    //curtain.y = parentFrame.y;
+    region.width = parentFrame.width;
+    region.height = parentFrame.height;
+    //region.x = parentFrame.x;
+    //region.y = parentFrame.y;
 
-    const elementCountIndex = curtain.content.search(/[₀-₉]/);
-    curtain.content = (((elementCountIndex >= 0) ? ('<b>' + curtain.content.substring(0, elementCountIndex-4) + '</b><br>') : '<b>' + curtain.content.substring(0, curtain.content.length-4) + '</b><br>'))
+    const elementCountIndex = region.content.search(/[₀-₉]/);
+    region.content = (((elementCountIndex >= 0) ? ('<b>' + region.content.substring(0, elementCountIndex-4) + '</b><br>') : '<b>' + region.content.substring(0, region.content.length-4) + '</b><br>'))
         + replaceDigitsWithSubscripts((parentFrame.childrenIds.length - 1).toString());
 
-    //await curtain.bringToFront()
-    await curtain.sync();
-    await fadeToOpaque(curtain);
+    //await region.bringToFront()
+    await region.sync();
+    await fadeToOpaque(region);
 }
 
-export async function hideCurtain(curtain:Shape) {
-    await fadeToClear(curtain)
-    curtain.style["borderOpacity"] = 0;
-    curtain.style["color"] = '#ffffff';
-    curtain.width = 8;
-    curtain.height = 8;
+export async function hideRegion(region:Shape) {
+    await fadeToClear(region)
+    region.style["borderOpacity"] = 0;
+    region.style["color"] = '#ffffff';
+    region.width = 8;
+    region.height = 8;
 
     let parentFrame:Frame;
-    if (curtain.parentId != null) {
-        parentFrame = await miro.board.getById(curtain.parentId) as Frame
+    if (region.parentId != null) {
+        parentFrame = await miro.board.getById(region.parentId) as Frame
     } else {
-        console.error("Attempted to read parent frame id, but curtain had no parent frame.")
+        console.error("Attempted to read parent frame id, but region had no parent frame.")
         return
-        // throw new Error("Attempted to read parent frame id, but curtain had no parent frame.");
+        // throw new Error("Attempted to read parent frame id, but region had no parent frame.");
     }
 
-    //curtain.x = parentFrame.x+1;
-    //curtain.y = parentFrame.y+1;
+    //region.x = parentFrame.x+1;
+    //region.y = parentFrame.y+1;
 
-    //await curtain.sendToBack()
-    await curtain.sync();
+    //await region.sendToBack()
+    await region.sync();
 }
 
-async function fadeToOpaque(curtain:Shape){
+async function fadeToOpaque(region:Shape){
 
     for (let i = 1; i <= 10; i++){
-        curtain.style["fillOpacity"] =(i/10.0);
-        await curtain.sync();
+        region.style["fillOpacity"] =(i/10.0);
+        await region.sync();
         //setTimeout(10)
 
     };
 }
 
 
-async function fadeToClear(curtain:Shape){
+async function fadeToClear(region:Shape){
 
 
     for (let i = 0; i < 10; i++){
-        curtain.style["fillOpacity"] =(1-i/10.0);
-        await curtain.sync()
+        region.style["fillOpacity"] =(1-i/10.0);
+        await region.sync()
         // await sleep(10)
     };
 

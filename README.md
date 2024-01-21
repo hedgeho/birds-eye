@@ -17,22 +17,22 @@ Users frequently encounter large Miro boards that are either poorly organized or
 
 ### Solution
 
-Our proposed solution addresses these challenges by introducing "curtains" that intelligently hide content when not in focus, providing users with a more streamlined and organized experience. 
-The curtains not only conceal items but also display a summary or title for the covered content, enhancing user understanding.
+Our proposed solution addresses these challenges by introducing "regions" that intelligently hide content when not in focus, providing users with a more streamlined and organized experience. 
+The regions not only conceal items but also display a summary or title for the covered content, enhancing user understanding.
 
 Implemented Functionality:
 
-- #### Curtain Creation:
-  Users can create a "curtain" from a selection of items by using a custom action. An AI-generated title will be suggested to enhance user experience.
+- #### region Creation:
+  Users can create a "region" from a selection of items by using a custom action. An AI-generated title will be suggested to enhance user experience.
 
-- #### Adding Curtains to Frames:
-  Curtains can be seamlessly added to existing frames, ensuring flexibility in organizing and presenting information.
+- #### Adding regions to Frames:
+  regions can be seamlessly added to existing frames, ensuring flexibility in organizing and presenting information.
 
 - #### Dynamic Visibility:
-  Curtains intelligently hide when a user is zoomed in on the covered items, allowing for a detailed examination.
-  Curtains become visible when a user is at a distance or outside the current view scope, providing context and structure.
+  regions intelligently hide when a user is zoomed in on the covered items, allowing for a detailed examination.
+  regions become visible when a user is at a distance or outside the current view scope, providing context and structure.
 
-By implementing this solution, we aim to simplify the navigation of large Miro boards, reduce distractions, and enhance the overall user experience by introducing an intelligent curtain system that adapts to user interactions.
+By implementing this solution, we aim to simplify the navigation of large Miro boards, reduce distractions, and enhance the overall user experience by introducing an intelligent region system that adapts to user interactions.
 
 ### Experimental features
 

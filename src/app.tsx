@@ -25,8 +25,8 @@ const App: React.FC = () => {
             <div className="cs1 ce12">
                 <h1>HowTOs:</h1>
                 <p>1: Create a frame or highlight the nodes you want to group.</p>
-                <p>2: Press the "Create a curtain" button on the highlighted nodes.</p>
-                <p>3: You just created your first Birdseye curtain!</p>
+                <p>2: Press the "Create a region" button on the highlighted nodes.</p>
+                <p>3: You just created your first Birdseye region!</p>
                 <p>4: Go and create visual and intuitive presentations or declutter you board.</p>
 
             </div>
