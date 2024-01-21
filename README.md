@@ -1,8 +1,10 @@
-# Bird's-Eye
+![img.png](img.png)
+
+# BIRDSEYE - Our project for Junction x Miro hackathon
 
 ### Situation
 
-Core usecases:
+Core use-cases of Miro platform:
 - project management
 - content visualizations
 - workshops and asynchronous collaboration
@@ -22,7 +24,7 @@ The regions not only conceal items but also display a summary or title for the c
 
 Implemented Functionality:
 
-- #### region Creation:
+- #### Region Creation:
   Users can create a "region" from a selection of items by using a custom action. An AI-generated title will be suggested to enhance user experience.
 
 - #### Adding regions to Frames:
@@ -36,7 +38,7 @@ By implementing this solution, we aim to simplify the navigation of large Miro b
 
 ### Experimental features
 
-Custom actions
+- Custom actions: Our core functionality is structured around this feature.
 
 ### How to start locally
 
