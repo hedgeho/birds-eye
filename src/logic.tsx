@@ -1,6 +1,7 @@
 // import * as React from 'react';
 
 import {Board, BoardViewport, Frame, Miro, Rect, Shape} from "@mirohq/websdk-types";
+import {random, string} from "mathjs";
 
 export async function addSticky() {
     const stickyNote = await miro.board.createStickyNote({
@@ -47,7 +48,7 @@ export async function createCurtain(frame:Frame) {
         shape: 'rectangle',
         style: {
             color: '#ffffff', // Default text color: '#1a1a1a' (black)
-            fillColor: '#2f00ff', // Default shape fill color: transparent (no fill)
+            fillColor: pickColor(), // Default shape fill color: transparent (no fill)
             fontFamily: 'arial', // Default font type for the text
             fontSize: fontsize, // Default font size for the text, in dp
             textAlign: 'center', // Default horizontal alignment for the text
@@ -121,7 +122,7 @@ export async function hideCurtain(curtain:Shape) {
     //curtain.style["fillOpacity"] = 0;
     await fadeToClear(curtain)
     curtain.style["borderOpacity"] = 0;
-    curtain.style["color"] = '#ff000000';
+    curtain.style["color"] = pickColor();
     curtain.width = 8;
     curtain.height = 8;
 
@@ -142,23 +143,31 @@ export async function hideCurtain(curtain:Shape) {
 }
 
 async function fadeToOpaque(curtain:Shape){
-    const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
     for (let i = 1; i <= 10; i++){
         curtain.style["fillOpacity"] =(i/10.0);
         await curtain.sync();
-        // await sleep(1);
+        //setTimeout(10)
+
     };
 }
 
 
 async function fadeToClear(curtain:Shape){
-    const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 
     for (let i = 0; i < 10; i++){
         curtain.style["fillOpacity"] =(1-i/10.0);
         await curtain.sync()
         // await sleep(10)
     };
+
+}
+
+function pickColor(){
+    const colours=["#264653","#2a9d8f","#e9c46a","#f4a261","#e76f51"];
+    const randomIndex = Math.floor(Math.random() * colours.length);
+    const randomColour = colours[randomIndex];
+    return randomColour;
 
 }
