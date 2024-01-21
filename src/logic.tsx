@@ -33,15 +33,18 @@ export async function checkIfCurtainShouldBeHidden(curtain:Shape | Frame,viewPor
 export async function createCurtain(frame:Frame) {
 
     // fontsize should be relative to curtain size
-    const fontsize = Math.min(frame.height, frame.width) / 5.0;
+    const fontsize = Math.min(frame.height, frame.width) / 6.9;
 
     const curtain = await miro.board.createShape({
-        content: '<p>' + frame.title + '</p>',
-        shape: 'rectangle',
+        content:
+            ((frame.title.trim() == "")
+                ? ('<b>Title here</b><br>') : ('<b>' + frame.title + '</b><br>'))
+            + replaceDigitsWithSubscripts(frame.childrenIds.length.toString()),
+        shape: 'round_rectangle',
         style: {
             color: '#ffffff', // Default text color: '#1a1a1a' (black)
             fillColor: pickColor(), // Default shape fill color: transparent (no fill)
-            fontFamily: 'arial', // Default font type for the text
+            fontFamily: 'roboto_mono', // Default font type for the text
             fontSize: fontsize, // Default font size for the text, in dp
             textAlign: 'center', // Default horizontal alignment for the text
             textAlignVertical: 'middle', // Default vertical alignment for the text
@@ -57,7 +60,6 @@ export async function createCurtain(frame:Frame) {
         height: frame.height
     });
 
-    curtain.content = curtain.content + '(' + frame.childrenIds.length + ' elements)'
     await curtain.sync()
 
     const storage= miro.board.storage.collection('storage');
@@ -83,10 +85,6 @@ export async function createCurtain(frame:Frame) {
 }
 
 export async function showCurtain(curtain:Shape) {
-    //curtain.style["fillOpacity"] = 1.0;
-
-    curtain.style["color"] = '#ffffff';
-
     let parentFrame:Frame;
     if (curtain.parentId != null) {
         parentFrame = await miro.board.getById(curtain.parentId) as Frame
@@ -101,9 +99,9 @@ export async function showCurtain(curtain:Shape) {
     //curtain.x = parentFrame.x;
     //curtain.y = parentFrame.y;
 
-    const bracketIndex = curtain.content.indexOf('(');
-    curtain.content = ((bracketIndex !== -1) ? curtain.content.substring(0, bracketIndex) : curtain.content)
-        + '(' + parentFrame.childrenIds.length + ' elements)';
+    const elementCountIndex = curtain.content.search(/[₀-₉]/);
+    curtain.content = (((elementCountIndex >= 0) ? ('<b>' + curtain.content.substring(0, elementCountIndex-4) + '</b><br>') : '<b>' + curtain.content.substring(0, curtain.content.length-4) + '</b><br>'))
+        + replaceDigitsWithSubscripts((parentFrame.childrenIds.length - 1).toString());
 
     //await curtain.bringToFront()
     await curtain.sync();
@@ -111,7 +109,6 @@ export async function showCurtain(curtain:Shape) {
 }
 
 export async function hideCurtain(curtain:Shape) {
-    //curtain.style["fillOpacity"] = 0;
     await fadeToClear(curtain)
     curtain.style["borderOpacity"] = 0;
     curtain.style["color"] = pickColor();
@@ -162,4 +159,30 @@ function pickColor(){
     const randomColour = colours[randomIndex];
     return randomColour;
 
+}
+
+function replaceDigitsWithSubscripts(input: string): string {
+    const subscriptMap: Record<string, string> = {
+        '0': '₀',
+        '1': '₁',
+        '2': '₂',
+        '3': '₃',
+        '4': '₄',
+        '5': '₅',
+        '6': '₆',
+        '7': '₇',
+        '8': '₈',
+        '9': '₉',
+    };
+
+    let output = '';
+    for (const char of input) {
+        if (char >= '0' && char <= '9') {
+            output += subscriptMap[char];
+        } else {
+            output += char;
+        }
+    }
+
+    return output;
 }
