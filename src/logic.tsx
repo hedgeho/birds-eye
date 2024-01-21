@@ -84,7 +84,12 @@ export async function createCurtain(frame:Frame) {
     return curtain;
 }
 
-export async function showCurtain(curtain:Shape) {
+// showCurtain with check for multi-user collisions
+export async function tryShowCurtain(curtain:Shape) {
+    await showCurtain(curtain); // If at least one user wants a curtain open, it should be open
+}
+
+async function showCurtain(curtain:Shape) {
     let parentFrame:Frame;
     if (curtain.parentId != null) {
         parentFrame = await miro.board.getById(curtain.parentId) as Frame
@@ -108,7 +113,23 @@ export async function showCurtain(curtain:Shape) {
     await fadeToOpaque(curtain);
 }
 
-export async function hideCurtain(curtain:Shape) {
+// hide-curtain with checks for multi-user collisions
+export async function tryHideCurtain(curtain:Shape) {
+    console.log("try hide ", curtain.id);
+    let last_focus = await curtain.getMetadata("last-focus");
+    if (!last_focus || last_focus.toString().length == 0) {
+        await hideCurtain(curtain);
+        return;
+    }
+    let last_focus_time = new Date(last_focus!.toString());
+    let time_passed = new Date().getTime() - last_focus_time.getTime();
+    const UPDATE_INTERVAL_MS = 150;
+    if (time_passed > UPDATE_INTERVAL_MS) {
+        await hideCurtain(curtain);
+    }
+}
+
+async function hideCurtain(curtain:Shape) {
     await fadeToClear(curtain)
     curtain.style["borderOpacity"] = 0;
     curtain.style["color"] = pickColor();
@@ -129,6 +150,10 @@ export async function hideCurtain(curtain:Shape) {
 
     //await curtain.sendToBack()
     await curtain.sync();
+}
+
+export async function updateCurtainAttention(curtain:Shape) {
+    await curtain.setMetadata("last-focus", new Date().toISOString());
 }
 
 async function fadeToOpaque(curtain:Shape){
