@@ -7,9 +7,15 @@ import '../src/assets/style.css';
 const App: React.FC = () => {
     return (
         <div className="grid wrapper">
+            <div className="app-card">
+                <p className="app-card--description p-medium">
+                    Miro Birdseye is an extension that helps you declutter your workspace and make professional presentations by hiding information not currently necessary.
+                </p>
+            </div>
+
 
             <div className="cs1 ce12">
-                <img src="/src/assets/tutorialGif(madeIn2004).gif" alt=""/>
+                <img src="/src/assets/tutorialGIf.gif" alt="Tutorial gif" />
             </div>
 
             <div className="cs1 ce12">
