@@ -19,18 +19,21 @@ export function isShapeInsideViewport(shape: Shape | Frame, viewport: Rect): boo
     // console.log(shapeX, shapeY, viewport)
     const { x: viewportX, y: viewportY, width: viewportWidth, height: viewportHeight } = viewport;
 
-    const shapeRight = shapeX + shapeWidth/2;
-    const shapeBottom = shapeY + shapeHeight/2;
-    const viewportRight = viewportX + viewportWidth;
-    const viewportBottom = viewportY + viewportHeight;
+    const intersectionRight = Math.min(shapeX + shapeWidth / 2, viewportX + viewportWidth)
+    const intersectionLeft = Math.max(shapeX - shapeWidth / 2, viewportX)
+    const intersectionBottom = Math.min(shapeY + shapeHeight / 2, viewportY + viewportHeight);
+    const intersectionTop = Math.min(shapeY - shapeHeight / 2, viewportY);
 
-    const isLeftInside = shapeX - shapeWidth/2 >= viewportX;
-    const isRightInside = shapeRight <= viewportRight;
+    if (intersectionTop > intersectionBottom || intersectionRight < intersectionLeft) {
+        return false;
+    }
 
-    const isTopInside = shapeY - shapeHeight/2 >= viewportY ;
-    const isBottomInside = shapeBottom <= viewportBottom;
-
-    return isLeftInside && isRightInside && isBottomInside && isTopInside;
+    const screenArea = viewportWidth * viewportHeight;
+    const intersectionArea = (intersectionRight - intersectionLeft) * (intersectionBottom - intersectionTop);
+    const shapeArea = shapeWidth * shapeHeight;
+    const fillRatio = intersectionArea / screenArea;
+    const presenceRatio = intersectionArea / shapeArea;
+    return fillRatio > 0.5 || presenceRatio > 0.5;
 }
 
 export async function checkIfCurtainShouldBeHidden(curtain:Shape | Frame,viewPort:Rect) {
