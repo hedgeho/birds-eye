@@ -11,13 +11,13 @@ async function generateCollectiveTitle(items: Item[]): Promise<string> {
     const completion = await generateChatCompletion([
             {
                 role: "system",
-                content: "Give a shot (at most in 3 words) title the items the users mentions. Do not use punctuation"
+                content: "Give a short (at most 3 words) title for the items the users mentions. Do not use punctuation"
             },
             {role: "user", content: itemTextsMerged}
         ],
     );
 
-    return completion.choices[0].message!.content!;
+    return completion? completion.choices[0].message!.content! : "notes";
 }
 
 async function findBoundingBox(items: Item[]) {
